@@ -1,0 +1,35 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.counter-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 280px;
+}
+
+.count {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0 0 24px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
