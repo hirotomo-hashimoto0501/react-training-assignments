@@ -1,5 +1,6 @@
 // ============================================================
 // Step 1: Todo追加機能
+// Step 2: Todo削除機能
 // ============================================================
 
 // Todoデータを管理する配列
@@ -41,6 +42,19 @@ function addTodo() {
 }
 
 // ------------------------------------------------------------
+// Todoを削除する関数
+// ------------------------------------------------------------
+function deleteTodo(id) {
+  // filter を使い、対象のid以外のTodoだけを残した新しい配列を作る
+  todos = todos.filter(function(todo) {
+    return todo.id !== id;
+  });
+
+  // 画面を更新する
+  renderTodos();
+}
+
+// ------------------------------------------------------------
 // Todoリストを画面に描画する関数
 // ------------------------------------------------------------
 function renderTodos() {
@@ -58,8 +72,18 @@ function renderTodos() {
     span.className = 'todo-text';
     span.textContent = todo.text;
 
-    // <li> に <span> を追加する
+    // 削除ボタンを作成する
+    var deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button';
+    deleteButton.textContent = '削除';
+    // クリックしたとき、このTodoのidを渡して削除関数を呼ぶ
+    deleteButton.addEventListener('click', function() {
+      deleteTodo(todo.id);
+    });
+
+    // <li> に要素を追加する
     li.appendChild(span);
+    li.appendChild(deleteButton);
 
     // <ul> に <li> を追加する
     todoList.appendChild(li);
