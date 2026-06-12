@@ -1,6 +1,7 @@
 // ============================================================
 // Step 1: Todo追加機能
 // Step 2: Todo削除機能
+// Step 3: Todo修正機能
 // ============================================================
 
 // Todoデータを管理する配列
@@ -41,6 +42,52 @@ function addTodo() {
   todoInput.value = '';
 }
 
+// 現在編集中のTodoのid（編集していないときは null）
+var editingId = null;
+
+// ------------------------------------------------------------
+// 編集モードを開始する関数
+// ------------------------------------------------------------
+function startEdit(id) {
+  // 編集中のidを記録し、renderTodosで編集UIを表示するトリガーにする
+  editingId = id;
+  renderTodos();
+}
+
+// ------------------------------------------------------------
+// 編集内容を保存する関数
+// ------------------------------------------------------------
+function saveTodo(id, newText) {
+  // 空文字の場合は保存しない
+  if (newText.trim() === '') {
+    return;
+  }
+
+  // todos配列の中から対象のTodoを探してtextを更新する
+  todos = todos.map(function(todo) {
+    if (todo.id === id) {
+      // 同じidのTodoだけtextを新しい値に置き換える
+      return { id: todo.id, text: newText.trim() };
+    }
+    return todo;
+  });
+
+  // 編集状態を終了する
+  editingId = null;
+
+  // 画面を更新する
+  renderTodos();
+}
+
+// ------------------------------------------------------------
+// 編集をキャンセルする関数
+// ------------------------------------------------------------
+function cancelEdit() {
+  // 編集中のidをリセットして通常表示に戻す
+  editingId = null;
+  renderTodos();
+}
+
 // ------------------------------------------------------------
 // Todoを削除する関数
 // ------------------------------------------------------------
@@ -67,23 +114,63 @@ function renderTodos() {
     var li = document.createElement('li');
     li.className = 'todo-item';
 
-    // Todo本文を表示する <span> を作成する
-    var span = document.createElement('span');
-    span.className = 'todo-text';
-    span.textContent = todo.text;
+    if (todo.id === editingId) {
+      // ---- 編集モード: テキスト入力欄と保存・キャンセルボタンを表示 ----
 
-    // 削除ボタンを作成する
-    var deleteButton = document.createElement('button');
-    deleteButton.className = 'delete-button';
-    deleteButton.textContent = '削除';
-    // クリックしたとき、このTodoのidを渡して削除関数を呼ぶ
-    deleteButton.addEventListener('click', function() {
-      deleteTodo(todo.id);
-    });
+      // 現在のテキストを初期値とした入力欄を作成する
+      var editInput = document.createElement('input');
+      editInput.type = 'text';
+      editInput.className = 'edit-input';
+      editInput.value = todo.text;
 
-    // <li> に要素を追加する
-    li.appendChild(span);
-    li.appendChild(deleteButton);
+      // 保存ボタンを作成する
+      var saveButton = document.createElement('button');
+      saveButton.className = 'save-button';
+      saveButton.textContent = '保存';
+      saveButton.addEventListener('click', function() {
+        saveTodo(todo.id, editInput.value);
+      });
+
+      // キャンセルボタンを作成する
+      var cancelButton = document.createElement('button');
+      cancelButton.className = 'cancel-button';
+      cancelButton.textContent = 'キャンセル';
+      cancelButton.addEventListener('click', function() {
+        cancelEdit();
+      });
+
+      li.appendChild(editInput);
+      li.appendChild(saveButton);
+      li.appendChild(cancelButton);
+    } else {
+      // ---- 通常モード: テキストと編集・削除ボタンを表示 ----
+
+      // Todo本文を表示する <span> を作成する
+      var span = document.createElement('span');
+      span.className = 'todo-text';
+      span.textContent = todo.text;
+
+      // 編集ボタンを作成する
+      var editButton = document.createElement('button');
+      editButton.className = 'edit-button';
+      editButton.textContent = '編集';
+      editButton.addEventListener('click', function() {
+        startEdit(todo.id);
+      });
+
+      // 削除ボタンを作成する
+      var deleteButton = document.createElement('button');
+      deleteButton.className = 'delete-button';
+      deleteButton.textContent = '削除';
+      // クリックしたとき、このTodoのidを渡して削除関数を呼ぶ
+      deleteButton.addEventListener('click', function() {
+        deleteTodo(todo.id);
+      });
+
+      li.appendChild(span);
+      li.appendChild(editButton);
+      li.appendChild(deleteButton);
+    }
 
     // <ul> に <li> を追加する
     todoList.appendChild(li);
