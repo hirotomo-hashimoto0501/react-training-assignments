@@ -22,6 +22,19 @@ HTML / CSS / JavaScript のみで実装したシンプルな Todo リストア�
 機能を一度にすべて実装するのではなく、3 段階に分けて実装しています。  
 各 Step の差分を追うことで、機能追加のプロセスを学べます。
 
+各 Step は Git のコミット単位で区切られています。以下のコマンドで差分を確認できます。
+
+```bash
+# Step 1: Todo 追加機能のコミット差分
+git show fb001a5
+
+# Step 2: Todo 削除機能のコミット差分
+git show 38335f9
+
+# Step 3: Todo 修正機能のコミット差分
+git show daac3b9
+```
+
 ### Step 1: Todo 追加機能
 
 - 入力欄への文字入力

@@ -8,6 +8,10 @@
 // 各Todoは { id: number, text: string } の形で格納する
 var todos = [];
 
+// Todoに割り当てる連番ID
+// Date.now() は同一ミリ秒で重複するリスクがあるため、連番で一意性を保証する
+var nextId = 1;
+
 // HTML要素の取得
 var todoInput = document.getElementById('todo-input');
 var addButton = document.getElementById('add-button');
@@ -26,11 +30,12 @@ function addTodo() {
   }
 
   // 新しいTodoオブジェクトを作成する
-  // id には現在時刻（ミリ秒）を使い、各Todoを一意に識別できるようにする
+  // id には nextId を使い、追加のたびに1ずつ増やして一意性を保証する
   var newTodo = {
-    id: Date.now(),
+    id: nextId,
     text: text,
   };
+  nextId = nextId + 1;
 
   // 配列に追加する
   todos.push(newTodo);
