@@ -1,23 +1,48 @@
 import { useState } from 'react';
-import './To do.css';
+import type { KeyboardEvent } from 'react';
 
-function App() {
-  const [count, setCount] = useState<number>(0);
+type TodoInputProps = {
+  // Todo追加処理は状態を持つ親（TodoList）に任せ、
+  // この関数を呼び出すだけにすることで責務を分離する
+  onAdd: (text: string) => void;
+};
 
-  const handleAddCount = (): void => {
-    setCount((prevCount) => prevCount + 1);
+function TodoInput({ onAdd }: TodoInputProps) {
+  // 入力欄の値はこのコンポーネント内だけで完結するローカルな状態
+  const [text, setText] = useState<string>('');
+
+  const handleAdd = (): void => {
+    const trimmedText = text.trim();
+
+    // 空文字（または空白のみ）は追加しない
+    if (trimmedText === '') {
+      return;
+    }
+
+    onAdd(trimmedText);
+    setText(''); // 追加後は入力欄をクリアする
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === 'Enter') {
+      handleAdd();
+    }
   };
 
   return (
-    <main className="app">
-      <div className="counter-box">
-        <p className="count">{count}</p>
-        <button type="button" onClick={handleAddCount}>
-          +1する
-        </button>
-      </div>
-    </main>
+    <div className="input-area">
+      <input
+        type="text"
+        placeholder="Todoを入力してください"
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <button type="button" onClick={handleAdd}>
+        追加
+      </button>
+    </div>
   );
 }
 
-export default App;
+export default TodoInput;

@@ -1,23 +1,17 @@
-import { useState } from 'react';
-import './To do.css';
+import type { Todo } from '../types';
 
-function App() {
-  const [count, setCount] = useState<number>(0);
+type TodoItemProps = {
+  todo: Todo;
+};
 
-  const handleAddCount = (): void => {
-    setCount((prevCount) => prevCount + 1);
-  };
-
+// 現時点ではTodo追加機能のみを実装するため、テキスト表示のみを行う。
+// 削除・修正ボタンは、それぞれの機能を実装するステップで追加する。
+function TodoItem({ todo }: TodoItemProps) {
   return (
-    <main className="app">
-      <div className="counter-box">
-        <p className="count">{count}</p>
-        <button type="button" onClick={handleAddCount}>
-          +1する
-        </button>
-      </div>
-    </main>
+    <li className="todo-item">
+      <span className="todo-text">{todo.text}</span>
+    </li>
   );
 }
 
-export default App;
+export default TodoItem;
