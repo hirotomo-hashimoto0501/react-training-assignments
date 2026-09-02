@@ -11,6 +11,16 @@ function TodoList() {
   // Todoに割り当てる連番ID。追加のたびに1ずつ増やして一意性を保証する
   const [nextId, setNextId] = useState<number>(1);
 
+  // 現在編集中のTodoのid（編集していないときはnull）
+  // この値と一致するidのTodoだけが、TodoItem側で入力欄表示に切り替わる
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  // 編集欄に入力中のテキスト
+  // TodoItem側にローカルstateを持たせると、同じ行を再利用して
+  // 別のタイミングで編集を開始したときに前回の入力が残ってしまうため、
+  // 編集中の値もこのTodoList側でまとめて管理する
+  const [editingText, setEditingText] = useState<string>('');
+
   const handleAddTodo = (text: string): void => {
     const newTodo: Todo = { id: nextId, text };
 
@@ -30,14 +40,63 @@ function TodoList() {
     );
   };
 
+  // 編集モードを開始する関数
+  // 対象のidを記録し、編集欄の初期値として現在のテキストをセットする
+  const handleStartEdit = (id: number, currentText: string): void => {
+    setEditingId(id);
+    setEditingText(currentText);
+  };
+
+  // 編集欄の入力値が変わるたびに呼ばれる関数
+  const handleEditTextChange = (text: string): void => {
+    setEditingText(text);
+  };
+
+  // 編集内容を確定させる関数
+  const handleSaveEdit = (): void => {
+    // 空文字（空白のみ含む）は保存しない
+    if (editingText.trim() === '') {
+      return;
+    }
+
+    // Array.map は「各要素を変換した新しい配列」を作るメソッド。
+    // 編集対象のidと一致するTodoだけ新しいtextに置き換え、
+    // それ以外のTodoはそのまま返すことで、対象だけを更新している。
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === editingId
+          ? { id: todo.id, text: editingText.trim() }
+          : todo
+      )
+    );
+
+    // 編集状態を終了し、通常表示に戻す
+    setEditingId(null);
+  };
+
+  // 編集をキャンセルする関数（内容は保存せず、通常表示に戻すだけ）
+  const handleCancelEdit = (): void => {
+    setEditingId(null);
+  };
+
   return (
     <div className="todo-list-wrapper">
       <TodoInput onAdd={handleAddTodo} />
       <ul className="todo-list">
         {todos.map((todo) => (
-          // key: Reactがリストの各要素を区別するための一意な値
-          // onDelete: 削除ボタン押下時にhandleDeleteTodoを呼び出せるように渡す
-          <TodoItem key={todo.id} todo={todo} onDelete={handleDeleteTodo} />
+          <TodoItem
+            // key: Reactがリストの各要素を区別するための一意な値
+            key={todo.id}
+            todo={todo}
+            onDelete={handleDeleteTodo}
+            // isEditing: このTodoが今まさに編集中かどうか
+            isEditing={todo.id === editingId}
+            editingText={editingText}
+            onStartEdit={handleStartEdit}
+            onEditTextChange={handleEditTextChange}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+          />
         ))}
       </ul>
     </div>
